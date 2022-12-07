@@ -7,8 +7,6 @@
   (:export #:gaussian
            #:random-gaussians
            #:gaussian-field
-           #:max-metric
-           #:diamond
            #:intersection-equation))
 
 (defpackage non-trivial-surface-functions

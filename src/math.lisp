@@ -40,22 +40,6 @@
                  σ)))))
        gaussians :initial-value #d(0.0 0.0)))))
 
-(declaim (ftype diff:differentiable-multivariate max-metric))
-(defun max-metric (coord)
-  (declare (optimize (speed 3)))
-  (destructuring-bind (x y) coord
-    (declare (type diff:dual x y))
-    (max (abs x)
-         (abs y))))
-
-(declaim (ftype diff:differentiable-multivariate l1-metric))
-(defun diamond (coord)
-  (declare (optimize (speed 3)))
-  (destructuring-bind (x y) coord
-    (declare (type diff:dual x y))
-    (+ (abs (* 0.5 x))
-       (abs y))))
-
 (sera:-> intersection-equation
          (list diff:differentiable-multivariate single-float list)
          (values diff:dual &optional))
