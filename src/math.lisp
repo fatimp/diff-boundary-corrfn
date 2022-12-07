@@ -1,7 +1,23 @@
 (in-package :non-trivial-surface-functions/math)
 
+(sera:defconstructor gaussian
+  (μ list)
+  (σ single-float))
+
+(sera:-> random-gaussians
+         (alex:positive-fixnum)
+         (values (simple-array gaussian (cl:*)) &optional))
+(defun random-gaussians (n)
+  (make-array n
+              :element-type 'gaussian
+              :initial-contents
+              (loop repeat n collect
+                    (gaussian (list (cl:- (random 1.0) 0.5)
+                                    (cl:- (random 1.0) 0.5))
+                              (cl:+ 0.1 (random 0.3))))))
+
 (sera:-> gaussian-field
-         ((simple-array sf/struct:gaussian))
+         ((simple-array gaussian (cl:*)))
          (values diff:differentiable-multivariate &optional))
 (defun gaussian-field (gaussians)
   (declare (optimize (speed 3)))
@@ -33,7 +49,7 @@
          (abs y))))
 
 (declaim (ftype diff:differentiable-multivariate l1-metric))
-(defun l1-metric (coord)
+(defun diamond (coord)
   (declare (optimize (speed 3)))
   (destructuring-bind (x y) coord
     (declare (type diff:dual x y))

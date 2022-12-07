@@ -7,8 +7,7 @@
   :serial t
   :pathname "src/"
   :components ((:file "packages")
-               (:file "structures")
-               (:file "medium")
+               (:file "math")
                (:file "surface-surface")
                (:file "discretization"))
   :depends-on (:cl-forward-diff
