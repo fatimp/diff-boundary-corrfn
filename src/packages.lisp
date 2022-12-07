@@ -11,10 +11,10 @@
 
 (defpackage non-trivial-surface-functions
   (:use #:cl)
-  (:local-nicknames (:sera      :serapeum)
-                    (:diff      :cl-forward-diff)
-                    (:alex      :alexandria)
-                    (:sf/math   :non-trivial-surface-functions/math))
+  (:local-nicknames (:sera    :serapeum)
+                    (:diff    :cl-forward-diff)
+                    (:alex    :alexandria)
+                    (:sf/math :non-trivial-surface-functions/math))
   (:export #:discretize-field
            #:intersections
            #:surface-surface))
