@@ -1,4 +1,4 @@
-(defpackage non-trivial-surface-functions-tests/math
+(defpackage diff-boundary-corrfn-tests/math
   (:use #:cl)
   (:local-nicknames (:sera :serapeum)
                     (:diff :cl-forward-diff))
@@ -6,9 +6,9 @@
   (:export #:square
            #:diamond))
 
-(defpackage non-trivial-surface-functions-tests
+(defpackage diff-boundary-corrfn-tests
   (:use #:cl #:fiveam)
   (:local-nicknames (:sera    :serapeum)
-                    (:sf      :non-trivial-surface-functions)
-                    (:sf/math :non-trivial-surface-functions-tests/math))
+                    (:cf      :diff-boundary-corrfn)
+                    (:cf/math :diff-boundary-corrfn-tests/math))
   (:export #:run-tests))

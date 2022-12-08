@@ -1,4 +1,4 @@
-(in-package :non-trivial-surface-functions-tests/math)
+(in-package :diff-boundary-corrfn-tests/math)
 
 (declaim (ftype diff:differentiable-multivariate square))
 (defun square (coord)

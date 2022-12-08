@@ -1,4 +1,4 @@
-(in-package :non-trivial-surface-functions)
+(in-package :diff-boundary-corrfn)
 
 (sera:-> discretize-field
          (alex:positive-fixnum diff:differentiable-multivariate)

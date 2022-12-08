@@ -1,17 +1,28 @@
-(in-package :non-trivial-surface-functions)
+(in-package :diff-boundary-corrfn)
 
 (declaim (type alex:positive-fixnum *lattice-elements* *ε-pixels*)
          (type (single-float 0.0) *ε-threshold* *ε-intersections*))
 
-(defparameter *lattice-elements* 2000)
-(defparameter *ε-pixels* 1)
-(defparameter *ε-threshold* 0.03)
-(defparameter *ε-intersections* 1f-3)
+(defparameter *lattice-elements* 2000
+  "Parameter used when searching for candidate points for the
+interface. Higher value gives more candidates.")
+(defparameter *ε-pixels* 1
+  "Parameter used when searching for candidate points for an
+intersection of the interfaces. Higher value results in more
+candidates.")
+(defparameter *ε-threshold* 0.03
+  "Parameter used when searching for candidate points for the
+interface. Higher value gives more candidates.")
+(defparameter *ε-intersections* 1f-3
+  "Parameter used when searching for unique points when the interface
+intersects its shifted self. Solutions which are closer to each
+other than this parameter are considered duplicates.")
 
 (sera:-> interface-candidates
          (diff:differentiable-multivariate single-float)
          (values list &optional))
 (defun interface-candidates (function threshold)
+  "Return a list of points (X Y) where FUNCTION(X, Y) ≈ THRESHOLD."
   (declare (optimize (speed 3)))
   (let ((Δ (/ (float (1- *lattice-elements*))))
         candidates)
@@ -46,6 +57,8 @@
          (diff:differentiable-multivariate single-float list)
          (values list &optional))
 (defun intersection-candidates (function threshold shift)
+  "Return a list of points X where f(X) ≈ THRESHOLD and f(X + SHIFT) ≈
+THRESHOLD."
   (declare (optimize (speed 3)))
   (let* ((interface-candidates
           (interface-candidates function threshold))
@@ -68,20 +81,22 @@
          (diff:differentiable-multivariate single-float list)
          (values list &optional))
 (defun intersections (function threshold shift)
+  "Return a list of exact intersections of the interface (a solution
+of the equation f(X) = THRESHOLD) with its shifted self."
   (declare (optimize (speed 3)))
   (let ((candidates (intersection-candidates function threshold shift)))
     (remove-duplicates
      (mapcar
       (lambda (candidate)
         (cl-optim:adam
-         (alex:rcurry #'sf/math:intersection-equation function threshold shift)
+         (alex:rcurry #'cf/math:intersection-equation function threshold shift)
          candidate :η 1f-2))
      candidates)
      :test (lambda (p1 p2)
              (< (euclidean-metric p1 p2) *ε-intersections*)))))
 
 (defun normalize (vector)
-  (let ((norm (sqrt (reduce #'+ (mapcar (alex:rcurry #'expt 2) vector)))))
+  (let ((norm (euclidean-metric vector '(0.0 0.0))))
     (mapcar (alex:rcurry #'/ norm) vector)))
 
 (defun dot (v1 v2)
@@ -91,6 +106,11 @@
          (diff:differentiable-multivariate single-float list)
          (values single-float &optional))
 (defun surface-surface (function threshold shift)
+  "Calculate the surface-surface function at the point SHIFT for a set
+with differentiable boundary FUNCTION(X, Y) = THRESHOLD.
+
+NB: Intersection points of the boundary and its shifted self must be
+in a square [-1, 1]^2."
   (let ((intersections (intersections function threshold shift)))
     (reduce
      #'+

@@ -1,4 +1,4 @@
-(defpackage non-trivial-surface-functions/math
+(defpackage diff-boundary-corrfn/math
   (:use #:cl)
   (:local-nicknames (:sera :serapeum)
                     (:alex :alexandria)
@@ -9,12 +9,16 @@
            #:gaussian-field
            #:intersection-equation))
 
-(defpackage non-trivial-surface-functions
+(defpackage diff-boundary-corrfn
   (:use #:cl)
   (:local-nicknames (:sera    :serapeum)
                     (:diff    :cl-forward-diff)
                     (:alex    :alexandria)
-                    (:sf/math :non-trivial-surface-functions/math))
+                    (:cf/math :diff-boundary-corrfn/math))
   (:export #:discretize-field
            #:intersections
-           #:surface-surface))
+           #:surface-surface
+           #:*lattice-elements*
+           #:*ε-pixels*
+           #:*ε-threshold*
+           #:*ε-intersections*))

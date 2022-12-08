@@ -1,4 +1,4 @@
-(in-package :non-trivial-surface-functions/math)
+(in-package :diff-boundary-corrfn/math)
 
 (sera:defconstructor gaussian
   (μ list)
@@ -8,6 +8,7 @@
          (alex:positive-fixnum)
          (values (simple-array gaussian (cl:*)) &optional))
 (defun random-gaussians (n)
+  "Generate N bell-shaped functions with random peak and sharpness."
   (make-array n
               :element-type 'gaussian
               :initial-contents
@@ -20,6 +21,9 @@
          ((simple-array gaussian (cl:*)))
          (values diff:differentiable-multivariate &optional))
 (defun gaussian-field (gaussians)
+  "Return a function which calculates a sum of gaussians defined by
+GAUSSIANS at the point (X Y). GAUSSIANS may be generated randomly by
+calling RANDOM-GAUSSIANS."
   (declare (optimize (speed 3)))
   (lambda (coord)
     (destructuring-bind (x y) coord

@@ -1,5 +1,5 @@
-(defsystem :non-trivial-surface-functions
-  :name :non-trivial-surface-functions
+(defsystem :diff-boundary-corrfn
+  :name :diff-boundary-corrfn
   :version "0.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :description "Computation of surface-surface function for two-dimensional sets"
@@ -16,13 +16,13 @@
                :alexandria
                :vp-trees
                :array-operations)
-  :in-order-to ((test-op (load-op "non-trivial-surface-functions/tests")))
+  :in-order-to ((test-op (load-op "diff-boundary-corrfn/tests")))
   :perform (test-op (op system)
                     (declare (ignore op system))
-                    (uiop:symbol-call :non-trivial-surface-functions-tests '#:run-tests)))
+                    (uiop:symbol-call :diff-boundary-corrfn-tests '#:run-tests)))
 
-(defsystem :non-trivial-surface-functions/tests
-  :name :non-trivial-surface-functions/tests
+(defsystem :diff-boundary-corrfn/tests
+  :name :diff-boundary-corrfn/tests
   :version "0.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
@@ -32,6 +32,6 @@
                (:file "math")
                (:file "tests"))
   :depends-on (:fiveam
-               :non-trivial-surface-functions
+               :diff-boundary-corrfn
                :cl-forward-diff
                :serapeum))
