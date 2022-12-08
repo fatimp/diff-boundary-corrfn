@@ -1,4 +1,5 @@
 # diff-boundary-corrfn
+[![CI tests](https://github.com/fatimp/diff-boundary-corrfn/actions/workflows/test.yml/badge.svg)](https://github.com/fatimp/diff-boundary-corrfn/actions/workflows/test.yml)
 
 This library provides a function which calculates the surface-surface
 correlation function (see Salvatore Torquato's book "Random heterogeneous
