@@ -13,8 +13,8 @@
               :element-type 'gaussian
               :initial-contents
               (loop repeat n collect
-                    (gaussian (list (cl:- (random 1.0) 0.5)
-                                    (cl:- (random 1.0) 0.5))
+                    (gaussian (list (cl:- (random 1.5) 0.75)
+                                    (cl:- (random 1.5) 0.75))
                               (cl:+ 0.1 (random 0.3))))))
 
 (sera:-> gaussian-field
