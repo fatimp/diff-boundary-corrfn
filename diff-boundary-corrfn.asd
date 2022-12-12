@@ -32,6 +32,4 @@
                (:file "math")
                (:file "tests"))
   :depends-on (:fiveam
-               :diff-boundary-corrfn
-               :cl-forward-diff
-               :serapeum))
+               :diff-boundary-corrfn))
