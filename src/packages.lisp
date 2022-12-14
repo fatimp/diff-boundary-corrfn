@@ -18,6 +18,7 @@
   (:export #:discretize-field
            #:intersections
            #:surface-surface
+           #:surface-surface-at-dist
            #:*lattice-elements*
            #:*ε-pixels*
            #:*ε-threshold*

@@ -122,3 +122,22 @@ in a square [-1, 1]^2."
           (/ (sqrt (- 1.0 (expt (dot gradient-here gradient-shifted) 2))))))
       intersections)
      :initial-value 0.0)))
+
+(sera:-> surface-surface-at-dist
+         (diff:differentiable-multivariate
+          single-float
+          (single-float 0.0)
+          alex:positive-fixnum)
+         (values list &optional))
+(defun surface-surface-at-dist (function threshold dist n)
+  "Calculate surface-surface function at N points X = (x1, x2) which
+have |X| = DIST. These points cover an arc with angles from 0 to π."
+  (flet ((polar->cartesian (ϕ)
+           (list (* dist (cos ϕ))
+                 (* dist (sin ϕ)))))
+    (loop with delta = (/ (float pi 0f0) n)
+          for i below n
+          for ϕ     = (* i delta)
+          for coord = (polar->cartesian ϕ) collect
+          (cons (surface-surface function threshold coord)
+                coord))))
