@@ -25,16 +25,16 @@ The function `f` must be defined using `cl-forward-diff` package and have
          (abs y))))
 ~~~~
 
-An inequation `(> (FUNCALL F COORD) 0.2)` defines a set `ℝ \ [-0.2, 0.2]^2` with
+An inequation `(> (FUNCALL F COORD) 2d-1)` defines a set `ℝ \ [-0.2, 0.2]^2` with
 a boundary which is differentiable almost everywhere. Now evaluation of
 
 ~~~~{.lisp}
 (diff-boundary-corrfn:surface-surface
  #'math-function:f
- 0.2 '(0.1 0.1))
+ 2d-1 '(1d-1 1d-1))
 ~~~~
 
-gives `2.0`. This can be understood as that two boundaries of a square which lie
+gives `2d0`. This can be understood as that two boundaries of a square which lie
 close to each other have two points of intersection and have an angle of
 intersection equal to `π/2`:
 

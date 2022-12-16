@@ -8,44 +8,44 @@
     (results-status status)))
 
 (defun ≈ (x y)
-  (< (abs (- x y)) 1f-4))
+  (< (abs (- x y)) 1d-4))
 
 (defun polar->cartesian (r ϕ)
   (list (* r (cos ϕ))
         (* r (sin ϕ))))
 
 (sera:-> ss-disk
-         ((single-float 0.0)
-          (single-float 0.0))
-         (values single-float &optional))
+         ((double-float 0d0)
+          (double-float 0d0))
+         (values double-float &optional))
 (defun ss-disk (dist radius)
   (let ((diameter (* 2 radius)))
     (if (< dist diameter)
         (/ (expt diameter 2)
            (* dist (sqrt (- (expt diameter 2)
                             (expt dist     2)))))
-        0.0)))
+        0d0)))
 
 (in-suite surface-surface)
 
 (test square
-  (is (≈ (cf:surface-surface #'cf/math:square 0.2 '(0.1 0.1)) 2))
-  (is (≈ (cf:surface-surface #'cf/math:square 0.2 '(0.5 0.5)) 0)))
+  (is (≈ (cf:surface-surface #'cf/math:square 2d-1 '(1d-1 1d-1)) 2))
+  (is (≈ (cf:surface-surface #'cf/math:square 2d-1 '(5d-1 5d-1)) 0)))
 
 (test diamond
   (mapc
    (lambda (scale)
-     (is (≈ (cf:surface-surface (cf/math:diamond scale) 0.5 '(0.0 0.1))
+     (is (≈ (cf:surface-surface (cf/math:diamond scale) 5d-1 '(0d0 1d-1))
             (* 2 (/ (sin (* 2 (atan scale))))))))
-   '(0.7 0.6 0.5)))
+   '(7d-1 6d-1 5d-1)))
 
 (test disk
-  (let ((cl-optim:*ε* 1f-5))
-    (loop for x from 0.1 to 0.7 by 0.1 do
+  (let ((cl-optim:*ε* 1d-5))
+    (loop for x from 1d-1 to 7d-1 by 1d-1 do
           (loop for ϕ in (load-time-value
                           (mapcar
-                           (alex:curry #'* (float pi 0.0))
+                           (alex:curry #'* pi)
                            '(0 1/2 1/4))
                           t)
-                do (is (≈ (ss-disk x 0.4)
-                          (cf:surface-surface #'cf/math:disk 0.4 (polar->cartesian x ϕ))))))))
+                do (is (≈ (ss-disk x 4d-1)
+                          (cf:surface-surface #'cf/math:disk 4d-1 (polar->cartesian x ϕ))))))))

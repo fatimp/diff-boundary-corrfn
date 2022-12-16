@@ -18,11 +18,10 @@
         (expt y 2)))))
 
 (sera:-> diamond
-         (single-float)
+         (double-float)
          (values diff:differentiable-multivariate &optional))
 (defun diamond (scale)
-  (declare (optimize (speed 3))
-           (type single-float scale))
+  (declare (optimize (speed 3)))
   (lambda (coord)
     (destructuring-bind (x y) coord
       (declare (type diff:dual x y))
