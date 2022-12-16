@@ -8,7 +8,7 @@ boundary. A set is defined as points which satisfy an inequation `f(x, y) > T`.
 The function `f` must be defined using `cl-forward-diff` package and have
 `cl-forward-diff:differentiable-multivariate` type. Let's look at this example:
 
-~~~~{.lisp}
+``` lisp
 (defpackage math-function
   (:use #:cl)
   (:local-nicknames (:diff :cl-forward-diff))
@@ -23,16 +23,16 @@ The function `f` must be defined using `cl-forward-diff` package and have
     (declare (type diff:dual x y))
     (max (abs x)
          (abs y))))
-~~~~
+```
 
 An inequation `(> (FUNCALL F COORD) 2d-1)` defines a set `ℝ \ [-0.2, 0.2]^2` with
 a boundary which is differentiable almost everywhere. Now evaluation of
 
-~~~~{.lisp}
+``` lisp
 (diff-boundary-corrfn:surface-surface
  #'math-function:f
  2d-1 '(1d-1 1d-1))
-~~~~
+```
 
 gives `2d0`. This can be understood as that two boundaries of a square which lie
 close to each other have two points of intersection and have an angle of
