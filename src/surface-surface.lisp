@@ -57,7 +57,7 @@ other than this parameter are considered duplicates.")
          (diff:differentiable-multivariate double-float list)
          (values list &optional))
 (defun intersection-candidates (function threshold shift)
-  "Return a list of points X where f(X) ≈ THRESHOLD and f(X + SHIFT) ≈
+  "Return a list of points X where f(X) ≈ THRESHOLD and f(X - SHIFT) ≈
 THRESHOLD."
   (declare (optimize (speed 3)))
   (let* ((interface-candidates
@@ -66,12 +66,12 @@ THRESHOLD."
           (vp-trees:make-vp-tree interface-candidates
                                  #'euclidean-metric))
          intersection-candidates)
-    (flet ((add-df (x1 x2)
+    (flet ((sub (x1 x2)
              (declare (type double-float x1 x2))
-             (+ x1 x2)))
+             (- x1 x2)))
       (dolist (interface-candidate interface-candidates)
         (when (vp-trees:search-close interface-candidates-tree
-                                     (mapcar #'add-df interface-candidate shift)
+                                     (mapcar #'sub interface-candidate shift)
                                      (/ (* 2 *ε-pixels*) *lattice-elements*)
                                      #'euclidean-metric)
           (push interface-candidate intersection-candidates))))
@@ -118,7 +118,7 @@ in a square [-1, 1]^2."
       (lambda (intersection)
         (let ((gradient-here    (normalize (cl-forward-diff:ad-multivariate function intersection)))
               (gradient-shifted (normalize (cl-forward-diff:ad-multivariate
-                                            function (mapcar #'+ intersection shift)))))
+                                            function (mapcar #'- intersection shift)))))
           (/ (sqrt (- 1 (expt (dot gradient-here gradient-shifted) 2))))))
       intersections)
      :initial-value 0d0)))
