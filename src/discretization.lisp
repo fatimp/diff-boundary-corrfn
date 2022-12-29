@@ -4,6 +4,10 @@
          (alex:positive-fixnum diff:differentiable-multivariate)
          (values (simple-array double-float (* *)) &optional))
 (defun discretize-field (side function)
+  "Evaluate a differentiable function (of type
+DIFFERENTIABLE-MULTIVARIATE) in points of uniform grid which covers a
+square [-1, 1]^2 and return the result as two dimensional array with
+dimensions (SIDE SIDE)."
   (declare (optimize (speed 3)))
   (let ((array (make-array (list side side)
                            :element-type 'double-float))
