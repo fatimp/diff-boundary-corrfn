@@ -70,10 +70,10 @@ THRESHOLD."
              (declare (type double-float x1 x2))
              (- x1 x2)))
       (dolist (interface-candidate interface-candidates)
-        (when (vp-trees:search-close interface-candidates-tree
-                                     (mapcar #'sub interface-candidate shift)
-                                     (/ (* 2 *ε-pixels*) *lattice-elements*)
-                                     #'euclidean-metric)
+        (when (vp-trees:items-in-ball interface-candidates-tree
+                                      (mapcar #'sub interface-candidate shift)
+                                      (/ (* 2 *ε-pixels*) *lattice-elements*)
+                                      #'euclidean-metric)
           (push interface-candidate intersection-candidates))))
     intersection-candidates))
 
