@@ -3,14 +3,14 @@
 (declaim (type alex:positive-fixnum *lattice-elements* *ε-pixels*)
          (type (double-float 0d0) *ε-threshold* *ε-intersections*))
 
-(defparameter *lattice-elements* 2000
+(defparameter *lattice-elements* 1000
   "Parameter used when searching for candidate points for the
 interface. Higher value gives more candidates.")
 (defparameter *ε-pixels* 1
   "Parameter used when searching for candidate points for an
 intersection of the interfaces. Higher value results in more
 candidates.")
-(defparameter *ε-threshold* 3d-2
+(defparameter *ε-threshold* 4d-2
   "Parameter used when searching for candidate points for the
 interface. Higher value gives more candidates.")
 (defparameter *ε-intersections* 1d-3
