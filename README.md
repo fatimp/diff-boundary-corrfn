@@ -30,8 +30,8 @@ a boundary which is differentiable almost everywhere. Now evaluation of
 
 ``` lisp
 (diff-boundary-corrfn:surface-surface
- #'math-function:f
- 2d-1 '(1d-1 1d-1))
+ (diff-boundary-corrfn:interface #'math-function:f 2d-1)
+ '(1d-1 1d-1))
 ```
 
 gives `2d0`. This can be understood as that two boundaries of a square which lie

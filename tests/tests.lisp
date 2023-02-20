@@ -29,18 +29,19 @@
 (in-suite surface-surface)
 
 (test square
-  (is (≈ (cf:surface-surface #'cf/math:square 2d-1 '(1d-1 1d-1)) 2))
-  (is (≈ (cf:surface-surface #'cf/math:square 2d-1 '(5d-1 5d-1)) 0)))
+  (is (≈ (cf:surface-surface (cf:interface #'cf/math:square 2d-1) '(1d-1 1d-1)) 2))
+  (is (≈ (cf:surface-surface (cf:interface #'cf/math:square 2d-1) '(5d-1 5d-1)) 0)))
 
 (test diamond
   (mapc
    (lambda (scale)
-     (is (≈ (cf:surface-surface (cf/math:diamond scale) 5d-1 '(0d0 1d-1))
+     (is (≈ (cf:surface-surface (cf:interface (cf/math:diamond scale) 5d-1) '(0d0 1d-1))
             (* 2 (/ (sin (* 2 (atan scale))))))))
    '(7d-1 6d-1 5d-1)))
 
 (test disk
-  (let ((cl-optim:*ε* 1d-5))
+  (let ((cl-optim:*ε* 1d-5)
+        (interface (cf:interface #'cf/math:disk 4d-1)))
     (loop for x from 1d-1 to 7d-1 by 1d-1 do
           (loop for ϕ in (load-time-value
                           (mapcar
@@ -48,4 +49,4 @@
                            '(0 1/2 1/4))
                           t)
                 do (is (≈ (ss-disk x 4d-1)
-                          (cf:surface-surface #'cf/math:disk 4d-1 (polar->cartesian x ϕ))))))))
+                          (cf:surface-surface interface (polar->cartesian x ϕ))))))))

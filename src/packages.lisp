@@ -16,6 +16,8 @@
                     (:alex    :alexandria)
                     (:cf/math :diff-boundary-corrfn/math))
   (:export #:discretize-field
+           #:%interface
+           #:interface
            #:intersections
            #:surface-surface
            #:surface-surface-at-dist
