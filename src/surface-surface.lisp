@@ -97,7 +97,10 @@ precomputed object returned by INTERFACE function."
                       (%interface-function  interface)
                       (%interface-threshold interface)
                       shift)
-         candidate :η 1d-2))
+         candidate
+         :η 1d-2
+         ;; cl-optim:*ε* must be << *ε-intersections*
+         :ε (* *ε-intersections* 1d-2)))
      candidates)
      :test (lambda (p1 p2)
              (< (euclidean-metric p1 p2) *ε-intersections*)))))

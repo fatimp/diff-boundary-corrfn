@@ -40,8 +40,7 @@
    '(7d-1 6d-1 5d-1)))
 
 (test disk
-  (let ((cl-optim:*ε* 1d-5)
-        (interface (cf:interface #'cf/math:disk 4d-1)))
+  (let ((interface (cf:interface #'cf/math:disk 4d-1)))
     (loop for x from 1d-1 to 7d-1 by 1d-1 do
           (loop for ϕ in (load-time-value
                           (mapcar
