@@ -9,6 +9,7 @@
   :components ((:file "packages")
                (:file "math")
                (:file "surface-surface")
+               (:file "surface3")
                (:file "discretization"))
   :depends-on (:cl-forward-diff
                :cl-optim

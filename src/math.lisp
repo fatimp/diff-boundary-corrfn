@@ -58,3 +58,16 @@ calling RANDOM-GAUSSIANS."
            (- x1 x2)))
     (+ (expt (- (funcall function coord) threshold) 2)
        (expt (- (funcall function (mapcar #'sub coord shift)) threshold) 2))))
+
+(sera:-> intersection-equation-3
+         (list diff:differentiable-multivariate double-float list list)
+         (values diff:dual &optional))
+(defun intersection-equation-3 (coord function threshold shift1 shift2)
+  (declare (optimize (speed 3)))
+  (flet ((sub (x1 x2)
+           (declare (type diff:dual    x1)
+                    (type double-float x2))
+           (- x1 x2)))
+    (+ (expt (- (funcall function coord) threshold) 2)
+       (expt (- (funcall function (mapcar #'sub coord shift1)) threshold) 2)
+       (expt (- (funcall function (mapcar #'sub coord shift2)) threshold) 2))))

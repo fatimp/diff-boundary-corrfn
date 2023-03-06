@@ -7,7 +7,8 @@
   (:export #:gaussian
            #:random-gaussians
            #:gaussian-field
-           #:intersection-equation))
+           #:intersection-equation
+           #:intersection-equation-3))
 
 (defpackage diff-boundary-corrfn
   (:use #:cl)
@@ -20,8 +21,10 @@
            #:%interface
            #:interface
            #:intersections
+           #:intersections3
            #:surface-surface
            #:surface-surface-at-dist
+           #:surface3
            #:*lattice-elements*
            #:*ε-pixels*
            #:*ε-threshold*
