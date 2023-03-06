@@ -1,8 +1,8 @@
 (defpackage diff-boundary-corrfn/math
   (:use #:cl)
-  (:local-nicknames (:sera :serapeum)
-                    (:alex :alexandria)
-                    (:diff :cl-forward-diff))
+  (:local-nicknames (#:sera #:serapeum)
+                    (#:alex #:alexandria)
+                    (#:diff #:cl-forward-diff))
   #.(cl-forward-diff:shadowing-import-math)
   (:export #:gaussian
            #:random-gaussians
@@ -11,10 +11,11 @@
 
 (defpackage diff-boundary-corrfn
   (:use #:cl)
-  (:local-nicknames (:sera    :serapeum)
-                    (:diff    :cl-forward-diff)
-                    (:alex    :alexandria)
-                    (:cf/math :diff-boundary-corrfn/math))
+  (:local-nicknames (#:sera    #:serapeum)
+                    (#:diff    #:cl-forward-diff)
+                    (#:alex    #:alexandria)
+                    (#:cf/math #:diff-boundary-corrfn/math)
+                    (#:si      #:stateless-iterators))
   (:export #:discretize-field
            #:%interface
            #:interface

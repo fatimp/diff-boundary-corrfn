@@ -5,16 +5,18 @@
   (σ double-float))
 
 (sera:-> random-gaussians
-         (alex:positive-fixnum)
+         (alex:positive-fixnum alex:positive-fixnum)
          (values (simple-array gaussian (cl:*)) &optional))
-(defun random-gaussians (n)
-  "Generate N bell-shaped functions with random peak and sharpness."
-  (make-array n
+(defun random-gaussians (ngauss ndims)
+  "Generate NGAUSS NDIMS-dimensional bell-shaped functions with random
+peak and sharpness."
+  (make-array ngauss
               :element-type 'gaussian
               :initial-contents
-              (loop repeat n collect
-                    (gaussian (list (cl:- (random 1.5d0) 0.75d0)
-                                    (cl:- (random 1.5d0) 0.75d0))
+              (loop repeat ngauss collect
+                    (gaussian (loop repeat ndims
+                                    for μ = (cl:- (random 1.5d0) 0.75d0)
+                                    collect μ)
                               (cl:+ 0.1d0 (random 0.3d0))))))
 
 (sera:-> gaussian-field
@@ -22,27 +24,28 @@
          (values diff:differentiable-multivariate &optional))
 (defun gaussian-field (gaussians)
   "Return a function which calculates a sum of gaussians defined by
-GAUSSIANS at the point (X Y). GAUSSIANS may be generated randomly by
+GAUSSIANS at the point COORD. GAUSSIANS may be generated randomly by
 calling RANDOM-GAUSSIANS."
   (declare (optimize (speed 3)))
   (lambda (coord)
-    (destructuring-bind (x y) coord
-      (declare (type diff:dual x y))
-      (reduce
-       (lambda (acc gaussian)
-         (declare (type diff:dual acc))
-         (multiple-value-bind (μ σ)
-             (sera:deconstruct gaussian)
-           (declare (type double-float σ))
-           (destructuring-bind (center-x center-y) μ
-             (declare (type double-float center-x center-y))
-             (+ acc
-                (/
-                 (exp (/ (+ (expt (- x center-x) 2)
-                            (expt (- y center-y) 2))
-                         (* -2 (expt σ 2))))
-                 σ)))))
-       gaussians :initial-value #d(0 0)))))
+    (reduce
+     (lambda (acc gaussian)
+       (declare (type diff:dual acc))
+       (let ((μ (gaussian-μ gaussian))
+             (σ (gaussian-σ gaussian)))
+         (+ acc
+            (/ (exp (/
+                     (the diff:dual
+                          (reduce #'+
+                                  (map '(vector diff:dual)
+                                       (lambda (x center-x)
+                                         (declare (type double-float center-x)
+                                                  (type diff:dual x))
+                                         (expt (- x center-x) 2))
+                                       coord μ)))
+                     (* -2 (expt σ 2))))
+               σ))))
+     gaussians :initial-value #d(0d0 0d0))))
 
 (sera:-> intersection-equation
          (list diff:differentiable-multivariate double-float list)
