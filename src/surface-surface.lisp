@@ -119,6 +119,8 @@ precomputed object returned by INTERFACE function."
                (loop repeat (length list) collect 0d0))))
     (mapcar (alex:rcurry #'/ norm) list)))
 
+(sera:-> dot (list list)
+         (values double-float &optional))
 (defun dot (v1 v2)
   (reduce #'+ (mapcar #'* v1 v2)))
 

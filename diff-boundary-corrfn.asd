@@ -16,8 +16,8 @@
                :serapeum
                :alexandria
                :vp-trees
-               :array-operations
-               :stateless-iterators)
+               :stateless-iterators
+               :magicl)
   :in-order-to ((test-op (load-op "diff-boundary-corrfn/tests")))
   :perform (test-op (op system)
                     (declare (ignore op system))
