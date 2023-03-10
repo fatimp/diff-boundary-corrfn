@@ -105,12 +105,18 @@ precomputed object returned by INTERFACE function."
      :test (lambda (p1 p2)
              (< (euclidean-metric p1 p2) *ε-intersections*)))))
 
-(defun normalize (vector)
-  (let ((norm (euclidean-metric vector '(0d0 0d0))))
-    (mapcar (alex:rcurry #'/ norm) vector)))
+(defun norm (vector)
+  (euclidean-metric vector '(0d0 0d0)))
 
-(defun dot (v1 v2)
-  (reduce #'+ (mapcar #'* v1 v2)))
+(defun jacobian (a b)
+  (destructuring-bind (ax ay) a
+    (declare (type double-float ax ay))
+    (destructuring-bind (bx by) b
+      (declare (type double-float bx by))
+      (/ (* (norm a)
+            (norm b))
+         (- (* ax by)
+            (* bx ay))))))
 
 (sera:-> surface-surface (%interface list)
          (values double-float &optional))
@@ -127,10 +133,9 @@ in a square [-1, 1]^2."
      #'+
      (mapcar
       (lambda (intersection)
-        (let ((gradient-here    (normalize (cl-forward-diff:ad-multivariate function intersection)))
-              (gradient-shifted (normalize (cl-forward-diff:ad-multivariate
-                                            function (mapcar #'- intersection shift)))))
-          (/ (sqrt (- 1 (expt (dot gradient-here gradient-shifted) 2))))))
+        (abs (jacobian
+              (cl-forward-diff:ad-multivariate function intersection)
+              (cl-forward-diff:ad-multivariate function (mapcar #'- intersection shift)))))
       intersections)
      :initial-value 0d0)))
 
