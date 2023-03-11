@@ -9,13 +9,15 @@
   :components ((:file "packages")
                (:file "math")
                (:file "surface-surface")
+               (:file "surface3")
                (:file "discretization"))
   :depends-on (:cl-forward-diff
                :cl-optim
                :serapeum
                :alexandria
                :vp-trees
-               :array-operations)
+               :stateless-iterators
+               :magicl)
   :in-order-to ((test-op (load-op "diff-boundary-corrfn/tests")))
   :perform (test-op (op system)
                     (declare (ignore op system))

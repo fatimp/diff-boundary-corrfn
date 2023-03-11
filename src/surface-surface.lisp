@@ -23,13 +23,14 @@ other than this parameter are considered duplicates.")
          (values double-float &optional))
 (defun euclidean-metric (p1 p2)
   (declare (optimize (speed 3)))
-  (let ((x1 (first p1))
-        (y1 (second p1))
-        (x2 (first p2))
-        (y2 (second p2)))
-    (declare (type double-float x1 x2 y1 y2))
-    (sqrt (+ (expt (- x1 x2) 2)
-             (expt (- y1 y2) 2)))))
+  (sqrt
+   (reduce
+    #'+
+    (map '(vector double-float)
+         (lambda (x1 x2)
+           (declare (type double-float x1 x2))
+           (expt (- x1 x2) 2))
+         p1 p2))))
 
 (sera:defconstructor %interface
   (function  diff:differentiable-multivariate)
@@ -37,27 +38,32 @@ other than this parameter are considered duplicates.")
   (tree      vp-trees:vp-node))
 
 (sera:-> interface
-         (diff:differentiable-multivariate double-float)
+         (diff:differentiable-multivariate
+          alex:positive-fixnum
+          double-float)
          (values %interface &optional))
-(defun interface (function threshold)
-  "Calculate interface of a surface FUNCTION(X, Y) < THRESHOLD. Result
-of this function is accepted by SURFACE-SURFACE functions and its
-siblings."
+(defun interface (function ndims threshold)
+  "Calculate interface of a set FUNCTION(COORD) < THRESHOLD where
+COORD is a list with NDIMS elements. Result of this function is
+accepted by SURFACE-SURFACE functions and its siblings."
   (declare (optimize (speed 3)))
-  (let ((Δ (/ (float (1- *lattice-elements*) 0d0)))
-        candidates)
-    (loop for i fixnum below *lattice-elements*
-          for x = (1- (* 2 Δ i)) do
-          (loop for j fixnum below *lattice-elements*
-                for y = (1- (* 2 Δ j)) do
-                (when (< (abs (- threshold
-                                 (diff:dual-realpart
-                                  (funcall function
-                                           (list
-                                            (diff:make-dual x 0d0)
-                                            (diff:make-dual y 0d0))))))
-                         *ε-threshold*)
-                  (push (list x y) candidates))))
+  (let* ((Δ (/ (float (1- *lattice-elements*) 0d0)))
+         (coords (si:imap
+                  (lambda (coords)
+                    (mapcar
+                     (lambda (i)
+                       (declare (type alex:non-negative-fixnum i))
+                       (1- (* 2 Δ i)))
+                     (alex:flatten coords)))
+                  (reduce #'si:product
+                          (loop repeat ndims collect (si:range 0 *lattice-elements*)))))
+         candidates)
+    (si:do-iterator (coord coords)
+      (when (< (abs (- threshold
+                       (diff:dual-realpart
+                        (funcall function (mapcar #'diff:make-dual coord)))))
+               *ε-threshold*)
+        (push coord candidates)))
     (%interface function threshold
                 (vp-trees:make-vp-tree candidates #'euclidean-metric))))
 
@@ -105,18 +111,23 @@ precomputed object returned by INTERFACE function."
      :test (lambda (p1 p2)
              (< (euclidean-metric p1 p2) *ε-intersections*)))))
 
-(defun norm (vector)
-  (euclidean-metric vector '(0d0 0d0)))
+(sera:-> normalize (list)
+         (values list &optional))
+(defun normalize (list)
+  (let ((norm (euclidean-metric
+               list
+               (loop repeat (length list) collect 0d0))))
+    (mapcar (alex:rcurry #'/ norm) list)))
 
-(defun jacobian (a b)
-  (destructuring-bind (ax ay) a
-    (declare (type double-float ax ay))
-    (destructuring-bind (bx by) b
-      (declare (type double-float bx by))
-      (/ (* (norm a)
-            (norm b))
-         (- (* ax by)
-            (* bx ay))))))
+(sera:-> jacobian (&rest list)
+         (values double-float &optional))
+(defun jacobian (&rest lists)
+  (let* ((normalized (mapcar #'normalize lists))
+         (length (length lists))
+         (matrix (magicl:from-list
+                  (apply #'append normalized)
+                  (list length length))))
+    (/ (abs (magicl:det matrix)))))
 
 (sera:-> surface-surface (%interface list)
          (values double-float &optional))
