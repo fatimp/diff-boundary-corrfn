@@ -17,7 +17,8 @@
                :alexandria
                :vp-trees
                :stateless-iterators
-               :magicl)
+               :magicl
+               :magicl/ext-blas)
   :in-order-to ((test-op (load-op "diff-boundary-corrfn/tests")))
   :perform (test-op (op system)
                     (declare (ignore op system))

@@ -112,22 +112,16 @@ precomputed object returned by INTERFACE function."
      :test (lambda (p1 p2)
              (< (euclidean-metric p1 p2) *ε-intersections*)))))
 
-(sera:-> normalize (list)
-         (values list &optional))
-(defun normalize (list)
-  (let ((norm (euclidean-metric
-               list
-               (loop repeat (length list) collect 0d0))))
-    (mapcar (alex:rcurry #'/ norm) list)))
-
 (sera:-> jacobian (&rest list)
          (values double-float &optional))
 (defun jacobian (&rest lists)
-  (let* ((normalized (mapcar #'normalize lists))
-         (length (length lists))
-         (matrix (magicl:from-list
-                  (apply #'append normalized)
-                  (list length length))))
+  (let* ((length (length lists))
+         (normalized (mapcar
+                      (lambda (list)
+                        (magicl:normalize
+                         (magicl:from-list list (list length 1))))
+                      lists))
+         (matrix (magicl:hstack normalized)))
     (/ (abs (magicl:det matrix)))))
 
 (sera:-> surface-surface (%interface list)
