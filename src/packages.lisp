@@ -4,10 +4,7 @@
                     (#:alex #:alexandria)
                     (#:diff #:cl-forward-diff))
   #.(cl-forward-diff:shadowing-import-math)
-  (:export #:gaussian
-           #:random-gaussians
-           #:gaussian-field
-           #:intersection-equation
+  (:export #:intersection-equation
            #:intersection-equation-3))
 
 (defpackage diff-boundary-corrfn
