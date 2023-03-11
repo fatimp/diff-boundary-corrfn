@@ -3,9 +3,9 @@
   (:local-nicknames (:sera :serapeum)
                     (:diff :cl-forward-diff))
   #.(cl-forward-diff:shadowing-import-math)
-  (:export #:square
+  (:export #:cube
            #:diamond
-           #:disk))
+           #:ball))
 
 (defpackage diff-boundary-corrfn-tests
   (:use #:cl #:fiveam)
@@ -13,4 +13,5 @@
                     (:alex    :alexandria)
                     (:cf      :diff-boundary-corrfn)
                     (:cf/math :diff-boundary-corrfn-tests/math))
-  (:export #:run-tests))
+  (:export #:run-tests
+           #:run-tests-exhaustive))

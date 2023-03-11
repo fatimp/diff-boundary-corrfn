@@ -1,21 +1,24 @@
 (in-package :diff-boundary-corrfn-tests/math)
 
-(declaim (ftype diff:differentiable-multivariate square))
-(defun square (coord)
+(declaim (ftype diff:differentiable-multivariate cube))
+(defun cube (coord)
   (declare (optimize (speed 3)))
-  (destructuring-bind (x y) coord
-    (declare (type diff:dual x y))
-    (max (abs x)
-         (abs y))))
+  (reduce #'max (mapcar
+                 (lambda (x)
+                   (declare (type diff:dual x))
+                   (abs x))
+                 coord)))
 
-(declaim (ftype diff:differentiable-multivariate disk))
-(defun disk (coord)
+(declaim (ftype diff:differentiable-multivariate ball))
+(defun ball (coord)
   (declare (optimize (speed 3)))
-  (destructuring-bind (x y) coord
-    (declare (type diff:dual x y))
-    (sqrt
-     (+ (expt x 2)
-        (expt y 2)))))
+  (sqrt
+   (the diff:dual
+        (reduce #'+ (mapcar
+                     (lambda (x)
+                       (declare (type diff:dual x))
+                       (expt x 2))
+                     coord)))))
 
 (sera:-> diamond
          (double-float)

@@ -1,11 +1,20 @@
 (in-package :diff-boundary-corrfn-tests)
 
-(def-suite surface-surface :description "Test surface-surface function")
+(def-suite surface-surface :description "Test F_{ss} function")
+(def-suite surface3 :description "Test F_{sss} function")
 
 (defun run-tests ()
   (let ((status (run 'surface-surface)))
     (explain! status)
     (results-status status)))
+
+(defun run-tests-exhaustive ()
+  (every
+   (lambda (suite)
+     (let ((status (run suite)))
+       (explain! status)
+       (results-status status)))
+   '(surface-surface surface3)))
 
 (defun ≈ (x y)
   (< (abs (- x y)) 1d-4))
@@ -29,18 +38,22 @@
 (in-suite surface-surface)
 
 (test square
-  (is (≈ (cf:surface-surface (cf:interface #'cf/math:square 2 2d-1) '(1d-1 1d-1)) 2))
-  (is (≈ (cf:surface-surface (cf:interface #'cf/math:square 2 2d-1) '(5d-1 5d-1)) 0)))
+  (let* ((cf:*ε-threshold* 1d-3)
+         (interface (cf:interface #'cf/math:cube 2 2d-1)))
+    (is (≈ (cf:surface-surface interface '(1d-1 1d-1)) 2))
+    (is (≈ (cf:surface-surface interface '(5d-1 5d-1)) 0))))
 
 (test diamond
-  (mapc
-   (lambda (scale)
-     (is (≈ (cf:surface-surface (cf:interface (cf/math:diamond scale) 2  5d-1) '(0d0 1d-1))
-            (* 2 (/ (sin (* 2 (atan scale))))))))
-   '(7d-1 6d-1 5d-1)))
+  (let ((cf:*ε-threshold* 1d-3))
+    (mapc
+     (lambda (scale)
+       (is (≈ (cf:surface-surface (cf:interface (cf/math:diamond scale) 2  5d-1) '(0d0 1d-1))
+              (* 2 (/ (sin (* 2 (atan scale))))))))
+     '(7d-1 6d-1 5d-1))))
 
 (test disk
-  (let ((interface (cf:interface #'cf/math:disk 2 4d-1)))
+  (let* ((cf:*ε-threshold* 1d-3)
+         (interface (cf:interface #'cf/math:ball 2 4d-1)))
     (loop for x from 1d-1 to 7d-1 by 1d-1 do
           (loop for ϕ in (load-time-value
                           (mapcar
@@ -49,3 +62,12 @@
                           t)
                 do (is (≈ (ss-disk x 4d-1)
                           (cf:surface-surface interface (polar->cartesian x ϕ))))))))
+
+(in-suite surface3)
+
+(test cube
+  (let* ((cf:*lattice-elements* 500)
+         (cf:*ε-threshold* 5d-3)
+         (interface (cf:interface #'cf/math:cube 3 2d-1)))
+    (is (≈ (cf:surface3 interface '(1d-1 4d-2 3d-2) '(3d-2 3d-2 1d-1)) 2))
+    (is (≈ (cf:surface3 interface '(1d-1 4d-2 3d-2) '(3d-2 3d-2 6d-1)) 0))))
