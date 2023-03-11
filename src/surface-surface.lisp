@@ -30,7 +30,8 @@ other than this parameter are considered duplicates.")
          (lambda (x1 x2)
            (declare (type double-float x1 x2))
            (expt (- x1 x2) 2))
-         p1 p2))))
+         p1 p2)
+    :initial-value 0d0)))
 
 (sera:defconstructor %interface
   (function  diff:differentiable-multivariate)
