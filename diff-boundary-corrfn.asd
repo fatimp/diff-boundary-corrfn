@@ -8,9 +8,9 @@
   :pathname "src/"
   :components ((:file "packages")
                (:file "math")
-               (:file "surface-surface")
-               (:file "surface3")
-               (:file "discretization"))
+               (:file "discretization")
+               (:file "surface2")
+               (:file "surface3"))
   :depends-on (:cl-forward-diff
                :cl-optim
                :serapeum

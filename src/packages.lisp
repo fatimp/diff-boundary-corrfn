@@ -17,10 +17,10 @@
   (:export #:discretize-field
            #:%interface
            #:interface
-           #:intersections
+           #:intersections2
            #:intersections3
-           #:surface-surface
-           #:surface-surface-at-dist
+           #:surface2
+           #:surface2-at-dist
            #:surface3
            #:*lattice-elements*
            #:*ε-pixels*

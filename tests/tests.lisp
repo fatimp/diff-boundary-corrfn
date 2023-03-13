@@ -1,10 +1,10 @@
 (in-package :diff-boundary-corrfn-tests)
 
-(def-suite surface-surface :description "Test F_{ss} function")
+(def-suite surface2 :description "Test F_{ss} function")
 (def-suite surface3 :description "Test F_{sss} function")
 
 (defun run-tests ()
-  (let ((status (run 'surface-surface)))
+  (let ((status (run 'surface2)))
     (explain! status)
     (results-status status)))
 
@@ -14,7 +14,7 @@
      (let ((status (run suite)))
        (explain! status)
        (results-status status)))
-   '(surface-surface surface3)))
+   '(surface2 surface3)))
 
 (defun ≈ (x y)
   (< (abs (- x y)) 1d-4))
@@ -35,19 +35,19 @@
                             (expt dist     2)))))
         0d0)))
 
-(in-suite surface-surface)
+(in-suite surface2)
 
 (test square
   (let* ((cf:*ε-threshold* 1d-3)
          (interface (cf:interface #'cf/math:cube 2 2d-1)))
-    (is (≈ (cf:surface-surface interface '(1d-1 1d-1)) 2))
-    (is (≈ (cf:surface-surface interface '(5d-1 5d-1)) 0))))
+    (is (≈ (cf:surface2 interface '(1d-1 1d-1)) 2))
+    (is (≈ (cf:surface2 interface '(5d-1 5d-1)) 0))))
 
 (test diamond
   (let ((cf:*ε-threshold* 1d-3))
     (mapc
      (lambda (scale)
-       (is (≈ (cf:surface-surface (cf:interface (cf/math:diamond scale) 2  5d-1) '(0d0 1d-1))
+       (is (≈ (cf:surface2 (cf:interface (cf/math:diamond scale) 2  5d-1) '(0d0 1d-1))
               (* 2 (/ (sin (* 2 (atan scale))))))))
      '(7d-1 6d-1 5d-1))))
 
@@ -61,7 +61,7 @@
                            '(0 1/2 1/4))
                           t)
                 do (is (≈ (ss-disk x 4d-1)
-                          (cf:surface-surface interface (polar->cartesian x ϕ))))))))
+                          (cf:surface2 interface (polar->cartesian x ϕ))))))))
 
 (in-suite surface3)
 
