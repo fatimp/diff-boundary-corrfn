@@ -18,6 +18,7 @@ other than this parameter are considered duplicates.")
   "Return a list of points X where it's possible that INTERFACE
 intersects itself shifted by SHIFT."
   (declare (optimize (speed 3)))
+  (check-dimensionality 2 interface shift)
   (let* ((interface-tree (%interface-tree interface))
          (interface-points (vp-trees:flatten interface-tree))
          intersection-candidates)

@@ -8,6 +8,7 @@
   :pathname "src/"
   :components ((:file "packages")
                (:file "math")
+               (:file "conditions")
                (:file "discretization")
                (:file "surface2")
                (:file "surface3"))

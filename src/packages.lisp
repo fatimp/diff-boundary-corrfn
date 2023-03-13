@@ -22,7 +22,10 @@
            #:surface2
            #:surface2-at-dist
            #:surface3
+
            #:*lattice-elements*
            #:*ε-pixels*
            #:*ε-threshold*
-           #:*ε-intersections*))
+           #:*ε-intersections*
+
+           #:dimensionality-error))

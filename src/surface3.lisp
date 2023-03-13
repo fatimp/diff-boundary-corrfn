@@ -6,6 +6,7 @@
   "Return a list of points X where it's possible that INTERFACE
 intersects itself shifted by SHIFT1 and SHIFT2."
   (declare (optimize (speed 3)))
+  (check-dimensionality 3 interface shift1 shift2)
   (let* ((interface-tree (%interface-tree interface))
          (interface-points (vp-trees:flatten interface-tree))
          intersection-candidates)

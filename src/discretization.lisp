@@ -27,7 +27,28 @@ interface. Higher value gives more candidates.")
 (sera:defconstructor %interface
   (function  diff:differentiable-multivariate)
   (threshold double-float)
+  (ndims     alex:positive-fixnum)
   (tree      vp-trees:vp-node))
+
+(sera:-> check-dimensionality
+         (alex:positive-fixnum %interface &rest list)
+         (values &optional))
+(defun check-dimensionality (expected interface &rest shifts)
+  (flet ((%signal (actual)
+           (error 'dimensionality-error
+                  :expected expected
+                  :actual actual)))
+    (let ((ndims (%interface-ndims interface)))
+      (unless (= ndims expected)
+        (%signal ndims)))
+
+    (let ((mismatch (find-if
+                     (lambda (shift)
+                       (/= (length shift) expected))
+                     shifts)))
+      (when mismatch
+        (%signal (length mismatch)))))
+  (values))
 
 (sera:-> interface
          (diff:differentiable-multivariate
@@ -57,7 +78,7 @@ accepted by SURFACE-SURFACE functions and its siblings."
                         (funcall function (mapcar #'diff:make-dual coord)))))
                *ε-threshold*)
         (push coord candidates)))
-    (%interface function threshold
+    (%interface function threshold ndims
                 (vp-trees:make-vp-tree candidates #'euclidean-metric))))
 
 (sera:-> discretize-field
