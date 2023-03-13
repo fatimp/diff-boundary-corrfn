@@ -6,7 +6,8 @@
   #.(cl-forward-diff:shadowing-import-math)
   (:export #:gaussian
            #:random-gaussians
-           #:gaussian-field))
+           #:gaussian-field
+           #:ball))
 (in-package :example-functions)
 
 (sera:defconstructor gaussian
@@ -53,3 +54,14 @@ calling RANDOM-GAUSSIANS."
                  σ)))))
        gaussians :initial-value #d(0 0)))))
 
+(sera:-> ball (list)
+         (values diff:dual &optional))
+(defun ball (coord)
+  (declare (optimize (speed 3))
+           (type list coord))
+  (sqrt
+   (reduce #'+
+           (mapcar (lambda (x)
+                     (declare (type diff:dual x))
+                     (expt x 2))
+                   coord))))
