@@ -1,6 +1,9 @@
 (in-package :diff-boundary-corrfn)
 
-(sera:-> intersection-candidates-3 (%interface list list)
+(sera:-> intersection-candidates-3
+         (%interface
+          (simple-array double-float (*))
+          (simple-array double-float (*)))
          (values list &optional))
 (defun intersection-candidates-3 (interface shift1 shift2)
   "Return a list of points X where it's possible that INTERFACE
@@ -10,21 +13,24 @@ intersects itself shifted by SHIFT1 and SHIFT2."
   (let* ((interface-tree (%interface-tree interface))
          (interface-points (vp-trees:flatten interface-tree))
          intersection-candidates)
-    (flet ((sub (x1 x2)
-             (declare (type double-float x1 x2))
-             (- x1 x2)))
-      (dolist (interface-point interface-points)
-        (when (every
-               (lambda (shift)
-                 (vp-trees:items-in-ball interface-tree
-                                         (mapcar #'sub interface-point shift)
-                                         (/ (* 2d0 *ε-pixels*) *lattice-elements*)
-                                         #'euclidean-metric))
-               (list shift1 shift2))
-          (push interface-point intersection-candidates))))
-    intersection-candidates))
+    (dolist (interface-point interface-points)
+      (declare (type (simple-array double-float (*)) interface-point))
+      (when (every
+             (lambda (shift)
+               (declare (type (simple-array double-float (*)) shift))
+               (vp-trees:items-in-ball interface-tree
+                                       (map '(vector double-float)
+                                            #'- interface-point shift)
+                                       (/ (* 2d0 *ε-pixels*) *lattice-elements*)
+                                       #'euclidean-metric))
+             (list shift1 shift2))
+        (push interface-point intersection-candidates)))
+  intersection-candidates))
 
-(sera:-> intersections3 (%interface list list)
+(sera:-> intersections3
+         (%interface
+          (simple-array double-float (*))
+          (simple-array double-float (*)))                         
          (values list &optional))
 (defun intersections3 (interface shift1 shift2)
   "Return a list of exact intersections of the interface (a solution
@@ -39,11 +45,11 @@ precomputed object returned by INTERFACE function."
         intersections)
     (dolist (candidate candidates)
       (let ((solution
-             (cl-optim:adam target candidate
-                            :η 1d-2
+             (cl-optim:bfgs target candidate
                             ;; cl-optim:*ε* must be << *ε-intersections*
                             :ε (* *ε-intersections* 1d-2))))
-        (when (< (diff:dual-realpart (funcall target (mapcar #'diff:make-dual solution)))
+        (when (< (diff:dual-realpart (funcall target (map '(vector diff:dual)
+                                                          #'diff:make-dual solution)))
                  ;; FIXME: make a parameter?
                  1d-5)
           (push solution intersections))))
@@ -52,7 +58,10 @@ precomputed object returned by INTERFACE function."
                                (< (euclidean-metric p1 p2)
                                   *ε-intersections*)))))
 
-(sera:-> surface3 (%interface list list)
+(sera:-> surface3
+         (%interface
+          (simple-array double-float (*))
+          (simple-array double-float (*)))
          (values double-float &optional))
 (defun surface3 (interface shift1 shift2)
   "Calculate F_{sss} function at the point (SHIFT1, SHIFT2) for a set
@@ -69,9 +78,11 @@ in a square [-1, 1]^3."
       (lambda (intersection)
         (let ((gradient-here     (diff:ad-multivariate function intersection))
               (gradient-shifted1 (diff:ad-multivariate
-                                  function (mapcar #'- intersection shift1)))
+                                  function (map '(vector double-float)
+                                                #'- intersection shift1)))
               (gradient-shifted2 (diff:ad-multivariate
-                                  function (mapcar #'- intersection shift2))))
+                                  function (map '(vector double-float)
+                                                #'- intersection shift2))))
           (jacobian gradient-here
                     gradient-shifted1
                     gradient-shifted2)))

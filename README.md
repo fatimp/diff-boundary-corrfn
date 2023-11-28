@@ -21,8 +21,8 @@ example:
 (declaim (ftype diff:differentiable-multivariate f))
 (defun f (coord)
   (declare (optimize (speed 3)))
-  (destructuring-bind (x y) coord
-    (declare (type diff:dual x y))
+  (let ((x (aref coord 0))
+        (y (aref coord 1)))
     (max (abs x)
          (abs y))))
 ```
@@ -36,7 +36,7 @@ a boundary which is differentiable almost everywhere. Now evaluation of
   #'math-function:f
   2            ;; Number of dimensions
   2d-1)        ;; Parameter T
- '(1d-1 1d-1)) ;; Calculate F_{ss}(0.1, 0.1)
+ (cl-forward-diff:to-doubles '(1d-1 1d-1))) ;; Calculate F_{ss}(0.1, 0.1)
 ```
 
 gives `2d0`. This can be understood as that two boundaries of a square which lie

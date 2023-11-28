@@ -20,8 +20,9 @@
   (< (abs (- x y)) 1d-4))
 
 (defun polar->cartesian (r ϕ)
-  (list (* r (cos ϕ))
-        (* r (sin ϕ))))
+  (diff:to-doubles
+   (list (* r (cos ϕ))
+         (* r (sin ϕ)))))
 
 (sera:-> ss-disk
          ((double-float 0d0)
@@ -40,14 +41,15 @@
 (test square
   (let* ((cf:*ε-threshold* 1d-3)
          (interface (cf:interface #'cf/math:cube 2 2d-1)))
-    (is (≈ (cf:surface2 interface '(1d-1 1d-1)) 2))
-    (is (≈ (cf:surface2 interface '(5d-1 5d-1)) 0))))
+    (is (≈ (cf:surface2 interface (diff:to-doubles '(1d-1 1d-1))) 2))
+    (is (≈ (cf:surface2 interface (diff:to-doubles '(5d-1 5d-1))) 0))))
 
 (test diamond
   (let ((cf:*ε-threshold* 1d-3))
     (mapc
      (lambda (scale)
-       (is (≈ (cf:surface2 (cf:interface (cf/math:diamond scale) 2  5d-1) '(0d0 1d-1))
+       (is (≈ (cf:surface2 (cf:interface (cf/math:diamond scale) 2  5d-1)
+                           (diff:to-doubles '(0d0 1d-1)))
               (* 2 (/ (sin (* 2 (atan scale))))))))
      '(7d-1 6d-1 5d-1))))
 
@@ -69,5 +71,11 @@
   (let* ((cf:*lattice-elements* 500)
          (cf:*ε-threshold* 5d-3)
          (interface (cf:interface #'cf/math:cube 3 2d-1)))
-    (is (≈ (cf:surface3 interface '(1d-1 4d-2 3d-2) '(3d-2 3d-2 1d-1)) 2))
-    (is (≈ (cf:surface3 interface '(1d-1 4d-2 3d-2) '(3d-2 3d-2 6d-1)) 0))))
+    (is (≈ (cf:surface3 interface
+                        (diff:to-doubles '(1d-1 4d-2 3d-2))
+                        (diff:to-doubles '(3d-2 3d-2 1d-1)))
+           2))
+    (is (≈ (cf:surface3 interface
+                        (diff:to-doubles '(1d-1 4d-2 3d-2))
+                        (diff:to-doubles '(3d-2 3d-2 6d-1)))
+           0))))

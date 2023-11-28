@@ -1,6 +1,6 @@
 (defsystem :diff-boundary-corrfn
   :name :diff-boundary-corrfn
-  :version "0.1"
+  :version "0.2"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :description "Computation of surface-surface function for two-dimensional sets"
   :licence "2-clause BSD"
@@ -27,7 +27,7 @@
 
 (defsystem :diff-boundary-corrfn/tests
   :name :diff-boundary-corrfn/tests
-  :version "0.1"
+  :version "0.2"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :pathname "tests/"

@@ -3,22 +3,18 @@
 (declaim (ftype diff:differentiable-multivariate cube))
 (defun cube (coord)
   (declare (optimize (speed 3)))
-  (reduce #'max (mapcar
-                 (lambda (x)
-                   (declare (type diff:dual x))
-                   (abs x))
-                 coord)))
+  (reduce #'max
+          (map '(vector diff:dual) #'abs coord)))
 
 (declaim (ftype diff:differentiable-multivariate ball))
 (defun ball (coord)
   (declare (optimize (speed 3)))
   (sqrt
    (the diff:dual
-        (reduce #'+ (mapcar
-                     (lambda (x)
-                       (declare (type diff:dual x))
-                       (expt x 2))
-                     coord)))))
+        (reduce #'+ (map '(vector diff:dual)
+                         (lambda (x)
+                           (expt x 2))
+                         coord)))))
 
 (sera:-> diamond
          (double-float)
@@ -26,7 +22,8 @@
 (defun diamond (scale)
   (declare (optimize (speed 3)))
   (lambda (coord)
-    (destructuring-bind (x y) coord
-      (declare (type diff:dual x y))
+    (declare (type (simple-array diff:dual) coord))
+    (let ((x (aref coord 0))
+          (y (aref coord 1)))
       (+ (abs (* scale x))
          (abs y)))))

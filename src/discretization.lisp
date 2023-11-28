@@ -10,8 +10,9 @@ interface. Higher value gives more candidates.")
 interface. Higher value gives more candidates.")
 
 (sera:-> euclidean-metric
-         (list list)
-         (values double-float &optional))
+         ((simple-array double-float (*))
+          (simple-array double-float (*)))
+         (values (double-float 0d0) &optional))
 (defun euclidean-metric (p1 p2)
   (declare (optimize (speed 3)))
   (sqrt
@@ -19,7 +20,6 @@ interface. Higher value gives more candidates.")
     #'+
     (map '(vector double-float)
          (lambda (x1 x2)
-           (declare (type double-float x1 x2))
            (expt (- x1 x2) 2))
          p1 p2)
     :initial-value 0d0)))
@@ -31,7 +31,7 @@ interface. Higher value gives more candidates.")
   (tree      vp-trees:vp-node))
 
 (sera:-> check-dimensionality
-         (alex:positive-fixnum %interface &rest list)
+         (alex:positive-fixnum %interface &rest (simple-array double-float (*)))
          (values &optional))
 (defun check-dimensionality (expected interface &rest shifts)
   (flet ((%signal (actual)
@@ -63,11 +63,11 @@ accepted by SURFACE-SURFACE functions and its siblings."
   (let* ((Δ (/ (float (1- *lattice-elements*) 0d0)))
          (coords (si:imap
                   (lambda (coords)
-                    (mapcar
-                     (lambda (i)
-                       (declare (type alex:non-negative-fixnum i))
-                       (1- (* 2 Δ i)))
-                     (alex:flatten coords)))
+                    (map '(vector double-float)
+                         (lambda (i)
+                           (declare (type alex:non-negative-fixnum i))
+                           (1- (* 2 Δ i)))
+                         (alex:flatten coords)))
                   (reduce #'si:product
                           (loop with idx-iter = (si:range 0 *lattice-elements*)
                                 repeat ndims collect idx-iter))))
@@ -75,7 +75,9 @@ accepted by SURFACE-SURFACE functions and its siblings."
     (si:do-iterator (coord coords)
       (when (< (abs (- threshold
                        (diff:dual-realpart
-                        (funcall function (mapcar #'diff:make-dual coord)))))
+                        (funcall function (map '(vector diff:dual)
+                                               #'diff:make-dual
+                                               coord)))))
                *ε-threshold*)
         (push coord candidates)))
     (%interface function threshold ndims
@@ -103,8 +105,10 @@ NDIMS-dimensional array with dimensions (SIDE SIDE … SIDE)."
       (setf (apply #'aref array index)
             (diff:dual-realpart
              (funcall function
-                    (mapcar (lambda (i)
-                              (declare (type alex:non-negative-fixnum i))
-                              (diff:make-dual (1- (* 2 Δ i))))
-                            index)))))
+                    (map
+                     '(vector diff:dual)
+                     (lambda (i)
+                       (declare (type alex:non-negative-fixnum i))
+                       (diff:make-dual (1- (* 2 Δ i))))
+                     index)))))
     array))
