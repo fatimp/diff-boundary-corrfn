@@ -67,10 +67,8 @@ accepted by SURFACE-SURFACE functions and its siblings."
                          (lambda (i)
                            (declare (type alex:non-negative-fixnum i))
                            (1- (* 2 Δ i)))
-                         (alex:flatten coords)))
-                  (reduce #'si:product
-                          (loop with idx-iter = (si:range 0 *lattice-elements*)
-                                repeat ndims collect idx-iter))))
+                         coords))
+                  (si:power (si:range 0 *lattice-elements*) ndims)))
          candidates)
     (si:do-iterator (coord coords)
       (when (< (abs (- threshold
@@ -96,10 +94,7 @@ NDIMS-dimensional array with dimensions (SIDE SIDE … SIDE)."
   (declare (optimize (speed 3)))
   (let ((array (make-array (loop repeat ndims collect side)
                            :element-type 'double-float))
-        (indices (si:imap #'alex:flatten
-                          (reduce #'si:product
-                                  (loop with idx-iter = (si:range 0 side)
-                                        repeat ndims collect idx-iter))))
+        (indices (si:power (si:range 0 side) ndims))
         (Δ (/ (float (1- side) 0d0))))
     (si:do-iterator (index indices)
       (setf (apply #'aref array index)
