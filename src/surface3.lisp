@@ -72,19 +72,16 @@ NB: Intersection points of the boundary and its shifted self must be
 in a square [-1, 1]^3."
   (let ((intersections (intersections3 interface shift1 shift2))
         (function (%interface-function interface)))
-    (reduce
-     #'+
-     (mapcar
-      (lambda (intersection)
-        (let ((gradient-here     (diff:ad-multivariate function intersection))
-              (gradient-shifted1 (diff:ad-multivariate
-                                  function (map '(vector double-float)
-                                                #'- intersection shift1)))
-              (gradient-shifted2 (diff:ad-multivariate
-                                  function (map '(vector double-float)
-                                                #'- intersection shift2))))
-          (jacobian gradient-here
-                    gradient-shifted1
-                    gradient-shifted2)))
-      intersections)
-     :initial-value 0d0)))
+    (reduce #'+ intersections
+            :key (lambda (intersection)
+                   (let ((gradient-here     (diff:ad-multivariate function intersection))
+                         (gradient-shifted1 (diff:ad-multivariate
+                                             function (map '(vector double-float)
+                                                           #'- intersection shift1)))
+                         (gradient-shifted2 (diff:ad-multivariate
+                                             function (map '(vector double-float)
+                                                           #'- intersection shift2))))
+                     (jacobian gradient-here
+                               gradient-shifted1
+                               gradient-shifted2)))
+            :initial-value 0d0)))

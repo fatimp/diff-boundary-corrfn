@@ -77,16 +77,15 @@ NB: Intersection points of the boundary and its shifted self must be
 in a square [-1, 1]^2."
   (let ((intersections (intersections2 interface shift))
         (function (%interface-function interface)))
-    (reduce
-     #'+
-     (mapcar
-      (lambda (intersection)
-        (abs (jacobian
-              (cl-forward-diff:ad-multivariate function intersection)
-              (cl-forward-diff:ad-multivariate function (map '(vector double-float)
-                                                             #'- intersection shift)))))
-      intersections)
-     :initial-value 0d0)))
+    (reduce #'+ intersections
+            :key (lambda (intersection)
+                   (abs (jacobian
+                         (cl-forward-diff:ad-multivariate
+                          function intersection)
+                         (cl-forward-diff:ad-multivariate
+                          function (map '(vector double-float)
+                                        #'- intersection shift)))))
+            :initial-value 0d0)))
 
 (sera:-> surface2-at-dist
          (%interface (double-float 0d0) alex:positive-fixnum)
